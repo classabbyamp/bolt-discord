@@ -1,18 +1,18 @@
-{{pkg_name}}
+bolt-discord
 ============
 
-{{pkg_description}}
+A discord.py-based bot framework
 
 Installation
 ------------
 
-``{{pkg_name}}`` requires Python 3.8 at minimum. Install by running::
+``bolt-discord`` requires Python 3.8 at minimum. Install by running::
 
-    $ pip install {{pkg_name}}
+    $ pip install bolt-discord
 
 License
 -------
 
-Copyright {{YYYY}} {{authors}}
+Copyright 2020 classabbyamp, 0x5c
 
-Released under the {{license}} License. See ``LICENSE`` for the full license text.
+Released under the BSD 3-Clause License. See ``LICENSE`` for the full license text.
