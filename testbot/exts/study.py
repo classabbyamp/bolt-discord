@@ -19,10 +19,11 @@ import discord.ext.commands as commands
 
 import testbot.common as cmn
 from testbot.resources import study
+from bolt.utils import exceptions, embeds, misc
 
 
 class StudyCog(commands.Cog):
-    choices = {cmn.emojis.a: "A", cmn.emojis.b: "B", cmn.emojis.c: "C", cmn.emojis.d: "D"}
+    choices = {misc.emojis.a: "A", misc.emojis.b: "B", misc.emojis.c: "C", misc.emojis.d: "D"}
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -34,7 +35,7 @@ class StudyCog(commands.Cog):
     async def _random_question(self, ctx: commands.Context, country: str = "", level: str = ""):
         """Gets a random question from [HamStudy's](https://hamstudy.org) question pools."""
         with ctx.typing():
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
 
             country = country.lower()
             level = level.lower()
@@ -51,7 +52,7 @@ class StudyCog(commands.Cog):
                     # show list of possible pools
                     embed.title = "Pool Not Found!"
                     embed.description = "Possible arguments are:"
-                    embed.colour = cmn.colours.bad
+                    embed.colour = misc.colours.bad
                     for cty in study.pool_names:
                         levels = "`, `".join(study.pool_names[cty].keys())
                         embed.add_field(name=f"**Country: `{cty}` {study.pool_emojis[cty]}**",
@@ -69,7 +70,7 @@ class StudyCog(commands.Cog):
                 # show list of possible pools
                 embed.title = "Pool Not Found!"
                 embed.description = "Possible arguments are:"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 for cty in study.pool_names:
                     levels = "`, `".join(study.pool_names[cty].keys())
                     embed.add_field(name=f"**Country: `{cty}` {study.pool_emojis[cty]}**",
@@ -98,7 +99,7 @@ class StudyCog(commands.Cog):
                 # show list of possible pools
                 embed.title = "Pool Not Found!"
                 embed.description = "Possible arguments are:"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 for cty in study.pool_names:
                     levels = "`, `".join(study.pool_names[cty].keys())
                     embed.add_field(name=f"**Country: `{cty}` {study.pool_emojis[cty]}**",
@@ -111,7 +112,7 @@ class StudyCog(commands.Cog):
 
             async with self.session.get(f"https://hamstudy.org/pools/{pool}") as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 pool = json.loads(await resp.read())["pool"]
 
             # Select a question
@@ -123,10 +124,10 @@ class StudyCog(commands.Cog):
             embed.description = self.source
             embed.add_field(name="Question:", value=question["text"], inline=False)
             embed.add_field(name="Answers:",
-                            value=(f"**{cmn.emojis.a}** {question['answers']['A']}"
-                                   f"\n**{cmn.emojis.b}** {question['answers']['B']}"
-                                   f"\n**{cmn.emojis.c}** {question['answers']['C']}"
-                                   f"\n**{cmn.emojis.d}** {question['answers']['D']}"),
+                            value=(f"**{misc.emojis.a}** {question['answers']['A']}"
+                                   f"\n**{misc.emojis.b}** {question['answers']['B']}"
+                                   f"\n**{misc.emojis.c}** {question['answers']['C']}"
+                                   f"\n**{misc.emojis.d}** {question['answers']['D']}"),
                             inline=False)
             embed.add_field(name="To Answer:",
                             value=("Answer with reactions below. If not answered within 10 minutes,"
@@ -138,10 +139,10 @@ class StudyCog(commands.Cog):
 
         q_msg = await ctx.send(embed=embed)
 
-        await cmn.add_react(q_msg, cmn.emojis.a)
-        await cmn.add_react(q_msg, cmn.emojis.b)
-        await cmn.add_react(q_msg, cmn.emojis.c)
-        await cmn.add_react(q_msg, cmn.emojis.d)
+        await cmn.add_react(q_msg, misc.emojis.a)
+        await cmn.add_react(q_msg, misc.emojis.b)
+        await cmn.add_react(q_msg, misc.emojis.c)
+        await cmn.add_react(q_msg, misc.emojis.d)
 
         def check(reaction, user):
             return (user.id != self.bot.user.id
@@ -158,18 +159,18 @@ class StudyCog(commands.Cog):
             if self.choices[str(reaction.emoji)] == question["answer"]:
                 embed.remove_field(2)
                 embed.add_field(name="Answer:", value=f"Correct! The answer was **{question['answer']}**.")
-                embed.colour = cmn.colours.good
+                embed.colour = misc.colours.good
                 await q_msg.edit(embed=embed)
             else:
                 embed.remove_field(2)
                 embed.add_field(name="Answer:", value=f"Incorrect! The correct answer was **{question['answer']}**.")
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 await q_msg.edit(embed=embed)
 
     async def hamstudy_get_pools(self):
         async with self.session.get("https://hamstudy.org/pools/") as resp:
             if resp.status != 200:
-                raise cmn.BotHTTPError(resp)
+                raise exceptions.BotHTTPError(resp)
             else:
                 pools_dict = json.loads(await resp.read())
 

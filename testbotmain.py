@@ -24,6 +24,7 @@ from discord.ext import commands, tasks
 import testbot.info as info
 import testbot.common as cmn
 import testbot.utils.connector as conn
+from bolt.utils import embeds, checks, misc
 
 import testbot.data.keys as keys
 import testbot.data.options as opt
@@ -61,29 +62,29 @@ bot.qrm.debug_mode = debug_mode
 # --- Commands ---
 
 @bot.command(name="restart", aliases=["rs"], category=cmn.cat.admin)
-@commands.check(cmn.check_if_owner)
+@commands.check(checks.check_if_owner)
 async def _restart_bot(ctx: commands.Context):
     """Restarts the bot."""
     global exit_code
-    await cmn.add_react(ctx.message, cmn.emojis.check_mark)
+    await cmn.add_react(ctx.message, misc.emojis.check_mark)
     print(f"[**] Restarting! Requested by {ctx.author}.")
     exit_code = 42  # Signals to the wrapper script that the bot needs to be restarted.
     await bot.logout()
 
 
 @bot.command(name="shutdown", aliases=["shut"], category=cmn.cat.admin)
-@commands.check(cmn.check_if_owner)
+@commands.check(checks.check_if_owner)
 async def _shutdown_bot(ctx: commands.Context):
     """Shuts down the bot."""
     global exit_code
-    await cmn.add_react(ctx.message, cmn.emojis.check_mark)
+    await cmn.add_react(ctx.message, misc.emojis.check_mark)
     print(f"[**] Shutting down! Requested by {ctx.author}.")
     exit_code = 0  # Signals to the wrapper script that the bot should not be restarted.
     await bot.logout()
 
 
 @bot.group(name="extctl", aliases=["ex"], case_insensitive=True, category=cmn.cat.admin)
-@commands.check(cmn.check_if_owner)
+@commands.check(checks.check_if_owner)
 async def _extctl(ctx: commands.Context):
     """Extension control commands.
     Defaults to `list` if no subcommand specified"""
@@ -95,7 +96,7 @@ async def _extctl(ctx: commands.Context):
 @_extctl.command(name="list", aliases=["ls"])
 async def _extctl_list(ctx: commands.Context):
     """Lists loaded extensions."""
-    embed = cmn.embed_factory(ctx)
+    embed = embeds.embed_factory(ctx)
     embed.title = "Loaded Extensions"
     embed.description = "\n".join(["‣ " + x.split(".")[1] for x in bot.extensions.keys()])
     await ctx.send(embed=embed)
@@ -105,7 +106,7 @@ async def _extctl_list(ctx: commands.Context):
 async def _extctl_load(ctx: commands.Context, extension: str):
     """Loads an extension."""
     bot.load_extension(ext_dir + "." + extension)
-    await cmn.add_react(ctx.message, cmn.emojis.check_mark)
+    await cmn.add_react(ctx.message, misc.emojis.check_mark)
 
 
 @_extctl.command(name="reload", aliases=["rl", "r", "relaod"])
@@ -116,14 +117,14 @@ async def _extctl_reload(ctx: commands.Context, extension: str):
         if pika:
             await cmn.add_react(ctx.message, pika)
     bot.reload_extension(ext_dir + "." + extension)
-    await cmn.add_react(ctx.message, cmn.emojis.check_mark)
+    await cmn.add_react(ctx.message, misc.emojis.check_mark)
 
 
 @_extctl.command(name="unload", aliases=["ul"])
 async def _extctl_unload(ctx: commands.Context, extension: str):
     """Unloads an extension."""
     bot.unload_extension(ext_dir + "." + extension)
-    await cmn.add_react(ctx.message, cmn.emojis.check_mark)
+    await cmn.add_react(ctx.message, misc.emojis.check_mark)
 
 
 # --- Events ---
@@ -153,35 +154,35 @@ async def on_message(message):
 @bot.event
 async def on_command_error(ctx: commands.Context, err: commands.CommandError):
     if isinstance(err, commands.UserInputError):
-        await cmn.add_react(ctx.message, cmn.emojis.warning)
+        await cmn.add_react(ctx.message, misc.emojis.warning)
         await ctx.send_help(ctx.command)
     elif isinstance(err, commands.CommandNotFound):
         if ctx.invoked_with.startswith(("?", "!")):
             return
         else:
-            await cmn.add_react(ctx.message, cmn.emojis.question)
+            await cmn.add_react(ctx.message, misc.emojis.question)
     elif isinstance(err, commands.CheckFailure):
         # Add handling of other subclasses of CheckFailure as needed.
         if isinstance(err, commands.NotOwner):
-            await cmn.add_react(ctx.message, cmn.emojis.no_entry)
+            await cmn.add_react(ctx.message, misc.emojis.no_entry)
         else:
-            await cmn.add_react(ctx.message, cmn.emojis.x)
+            await cmn.add_react(ctx.message, misc.emojis.x)
     elif isinstance(err, commands.DisabledCommand):
-        await cmn.add_react(ctx.message, cmn.emojis.bangbang)
+        await cmn.add_react(ctx.message, misc.emojis.bangbang)
     elif isinstance(err, (commands.CommandInvokeError, commands.ConversionError)):
         # Emulating discord.py's default beaviour.
         print("Ignoring exception in command {}:".format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(err), err, err.__traceback__, file=sys.stderr)
 
-        embed = cmn.error_embed_factory(ctx, err.original, bot.qrm.debug_mode)
+        embed = embeds.error_embed_factory(ctx, err.original, bot.qrm.debug_mode)
         embed.description += f"\n`{type(err).__name__}`"
-        await cmn.add_react(ctx.message, cmn.emojis.warning)
+        await cmn.add_react(ctx.message, misc.emojis.warning)
         await ctx.send(embed=embed)
     else:
         # Emulating discord.py's default beaviour. (safest bet)
         print("Ignoring exception in command {}:".format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(err), err, err.__traceback__, file=sys.stderr)
-        await cmn.add_react(ctx.message, cmn.emojis.warning)
+        await cmn.add_react(ctx.message, misc.emojis.warning)
 
 
 # --- Tasks ---

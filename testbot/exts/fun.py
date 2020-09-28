@@ -41,7 +41,7 @@ class FunCog(commands.Cog):
     async def _worksplit(self, ctx: commands.Context):
         """Posts "Work split you lids"."""
         fn = "worksplit.jpg"
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         embed.title = "Work Split, You Lids!"
         embed.set_image(url="attachment://" + fn)
         img = discord.File(cmn.paths.img / fn, filename=fn)
@@ -62,10 +62,10 @@ class FunCog(commands.Cog):
             else:
                 result += char
             result += " "
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         embed.title = f"Funetics for {msg}"
         embed.description = result.title()
-        embed.colour = cmn.colours.good
+        embed.colour = misc.colours.good
         await ctx.send(embed=embed)
 
 
