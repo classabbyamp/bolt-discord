@@ -4,3 +4,6 @@ mypy
 twine
 sphinx
 sphinx-autobuild
+
+# More tooling
+discord.py-stubs
