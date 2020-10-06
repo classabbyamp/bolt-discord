@@ -16,6 +16,7 @@ import discord
 import discord.ext.commands as commands
 
 import testbot.common as cmn
+from bolt.utils import image, exceptions, embeds, misc
 
 
 class ImageCog(commands.Cog):
@@ -24,8 +25,8 @@ class ImageCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.bandcharts = cmn.ImagesGroup(cmn.paths.bandcharts / "meta.json")
-        self.maps = cmn.ImagesGroup(cmn.paths.maps / "meta.json")
+        self.bandcharts = image.ImagesGroup(cmn.paths.bandcharts / "meta.json")
+        self.maps = image.ImagesGroup(cmn.paths.maps / "meta.json")
         self.session = aiohttp.ClientSession(connector=bot.qrm.connector)
 
     @commands.command(name="bandplan", aliases=["plan", "bands"], category=cmn.cat.ref)
@@ -33,17 +34,17 @@ class ImageCog(commands.Cog):
         """Gets the frequency allocations chart for a given country."""
         async with ctx.typing():
             arg = region.lower()
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             if arg not in self.bandcharts:
                 desc = "Possible arguments are:\n"
                 for key, img in self.bandcharts.items():
                     desc += f"`{key}`: {img.name}{('  ' + img.emoji if img.emoji else '')}\n"
                 embed.title = "Bandplan Not Found!"
                 embed.description = desc
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 await ctx.send(embed=embed)
                 return
-            metadata: cmn.ImageMetadata = self.bandcharts[arg]
+            metadata: image.ImageMetadata = self.bandcharts[arg]
             img = discord.File(cmn.paths.bandcharts / metadata.filename,
                                filename=metadata.filename)
             if metadata.description:
@@ -51,7 +52,7 @@ class ImageCog(commands.Cog):
             if metadata.source:
                 embed.add_field(name="Source", value=metadata.source)
             embed.title = metadata.long_name + ("  " + metadata.emoji if metadata.emoji else "")
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             embed.set_image(url="attachment://" + metadata.filename)
             await ctx.send(embed=embed, file=img)
 
@@ -60,17 +61,17 @@ class ImageCog(commands.Cog):
         """Posts a ham-relevant map."""
         async with ctx.typing():
             arg = map_id.lower()
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             if arg not in self.maps:
                 desc = "Possible arguments are:\n"
                 for key, img in self.maps.items():
                     desc += f"`{key}`: {img.name}{('  ' + img.emoji if img.emoji else '')}\n"
                 embed.title = "Map Not Found!"
                 embed.description = desc
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 await ctx.send(embed=embed)
                 return
-            metadata: cmn.ImageMetadata = self.maps[arg]
+            metadata: image.ImageMetadata = self.maps[arg]
             img = discord.File(cmn.paths.maps / metadata.filename,
                                filename=metadata.filename)
             if metadata.description:
@@ -78,7 +79,7 @@ class ImageCog(commands.Cog):
             if metadata.source:
                 embed.add_field(name="Source", value=metadata.source)
             embed.title = metadata.long_name + ("  " + metadata.emoji if metadata.emoji else "")
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             embed.set_image(url="attachment://" + metadata.filename)
             await ctx.send(embed=embed, file=img)
 
@@ -86,12 +87,12 @@ class ImageCog(commands.Cog):
     async def _grayline(self, ctx: commands.Context):
         """Gets a map of the current greyline, where HF propagation is the best."""
         async with ctx.typing():
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = "Current Greyline Conditions"
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             async with self.session.get(self.gl_url) as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 data = io.BytesIO(await resp.read())
             embed.set_image(url="attachment://greyline.jpg")
             await ctx.send(embed=embed, file=discord.File(data, "greyline.jpg"))

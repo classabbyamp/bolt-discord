@@ -81,12 +81,12 @@ class DbConvCog(commands.Cog):
         *Power:* fW, mW, W, kW, dBf, dBm, dBW, dBk
         *Antenna Gain:* dBi, dBd, dBq
         """
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         if value is not None and unit_from is not None and unit_to is not None:
             converted = convert(value, unit_from, unit_to)
 
             embed.title = f"{value:.3g} {unit_from} = {converted:.3g} {unit_to}"
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
         else:
             embed.title = "Decibel Quick Reference"
             embed.description = (

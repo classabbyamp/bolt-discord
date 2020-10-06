@@ -17,6 +17,7 @@ import discord
 import discord.ext.commands as commands
 
 import testbot.common as cmn
+from bolt.utils import exceptions, embeds, misc
 
 
 class WeatherCog(commands.Cog):
@@ -30,12 +31,12 @@ class WeatherCog(commands.Cog):
     async def _band_conditions(self, ctx: commands.Context):
         """Gets a solar conditions report."""
         async with ctx.typing():
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = "Current Solar Conditions"
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             async with self.session.get("http://www.hamqsl.com/solarsun.php") as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 data = io.BytesIO(await resp.read())
             embed.set_image(url="attachment://condx.png")
             await ctx.send(embed=embed, file=discord.File(data, "condx.png"))
@@ -75,15 +76,15 @@ class WeatherCog(commands.Cog):
 
             loc = self.wttr_units_regex.sub("", location).strip()
 
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = f"Weather Forecast for {loc}"
             embed.description = "Data from [wttr.in](http://wttr.in/)."
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
 
             loc = loc.replace(" ", "+")
             async with self.session.get(f"http://wttr.in/{loc}_{units}pnFQ.png") as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 data = io.BytesIO(await resp.read())
             embed.set_image(url="attachment://wttr_forecast.png")
             await ctx.send(embed=embed, file=discord.File(data, "wttr_forecast.png"))
@@ -106,15 +107,15 @@ class WeatherCog(commands.Cog):
 
             loc = self.wttr_units_regex.sub("", location).strip()
 
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = f"Current Weather for {loc}"
             embed.description = "Data from [wttr.in](http://wttr.in/)."
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
 
             loc = loc.replace(" ", "+")
             async with self.session.get(f"http://wttr.in/{loc}_0{units}pnFQ.png") as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 data = io.BytesIO(await resp.read())
             embed.set_image(url="attachment://wttr_now.png")
             await ctx.send(embed=embed, file=discord.File(data, "wttr_now.png"))

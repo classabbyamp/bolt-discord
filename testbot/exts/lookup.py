@@ -42,10 +42,10 @@ class LookupCog(commands.Cog):
         """Gets DXCC info about a callsign prefix."""
         query = query.upper()
         full_query = query
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         embed.title = "DXCC Info for "
         embed.description = f"*Last Updated: {self.cty.formatted_version}*"
-        embed.colour = cmn.colours.bad
+        embed.colour = misc.colours.bad
         while query:
             if query in self.cty.keys():
                 data = self.cty[query]
@@ -56,13 +56,13 @@ class LookupCog(commands.Cog):
                 embed.add_field(name="Time Zone",
                                 value=f"+{data['tz']}" if data["tz"] > 0 else str(data["tz"]))
                 embed.title += query
-                embed.colour = cmn.colours.good
+                embed.colour = misc.colours.good
                 break
             else:
                 query = query[:-1]
         else:
             embed.title += full_query + " not found"
-            embed.colour = cmn.colours.bad
+            embed.colour = misc.colours.bad
         await ctx.send(embed=embed)
 
     @tasks.loop(hours=24)

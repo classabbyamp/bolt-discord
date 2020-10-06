@@ -28,10 +28,10 @@ class MorseCog(commands.Cog):
             except KeyError:
                 result += "<?>"
             result += " "
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         embed.title = f"Morse Code for {msg}"
         embed.description = "**" + result + "**"
-        embed.colour = cmn.colours.good
+        embed.colour = misc.colours.good
         await ctx.send(embed=embed)
 
     @commands.command(name="unmorse", aliases=["demorse", "uncw", "decw"], category=cmn.cat.ref)
@@ -48,16 +48,16 @@ class MorseCog(commands.Cog):
                 except KeyError:
                     result += "<?>"
             result += " "
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         embed.title = f"ASCII for {msg0}"
         embed.description = result
-        embed.colour = cmn.colours.good
+        embed.colour = misc.colours.good
         await ctx.send(embed=embed)
 
     @commands.command(name="cwweight", aliases=["weight", "cww"], category=cmn.cat.ref)
     async def _weight(self, ctx: commands.Context, *, msg: str):
         """Calculates the CW weight of a callsign or message."""
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         msg = msg.upper()
         weight = 0
         for char in msg:
@@ -67,12 +67,12 @@ class MorseCog(commands.Cog):
             except KeyError:
                 embed.title = "Error in calculation of CW weight"
                 embed.description = f"Unknown character `{char}` in message"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 await ctx.send(embed=embed)
                 return
         embed.title = f"CW Weight of {msg}"
         embed.description = f"The CW weight is **{weight}**"
-        embed.colour = cmn.colours.good
+        embed.colour = misc.colours.good
         await ctx.send(embed=embed)
 
 

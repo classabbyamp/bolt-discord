@@ -56,9 +56,9 @@ class QRZCog(commands.Cog):
                     await self._qrz_lookup(ctx, callsign)
                     return
                 if "Not found" in resp_session["Error"]:
-                    embed = cmn.embed_factory(ctx)
+                    embed = embeds.embed_factory(ctx)
                     embed.title = f"QRZ Data for {callsign.upper()}"
-                    embed.colour = cmn.colours.bad
+                    embed.colour = misc.colours.bad
                     embed.description = "No data found!"
                     await ctx.send(embed=embed)
                     return
@@ -67,9 +67,9 @@ class QRZCog(commands.Cog):
             resp_xml_data = resp_xml.xpath("/x:QRZDatabase/x:Callsign", namespaces={"x": "http://xmldata.qrz.com"})
             resp_data = {el.tag.split("}")[1]: el.text for el in resp_xml_data[0].getiterator()}
 
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = f"QRZ Data for {resp_data['call']}"
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             embed.url = f"http://www.qrz.com/db/{resp_data['call']}"
             if "image" in resp_data:
                 embed.set_thumbnail(url=resp_data["image"])

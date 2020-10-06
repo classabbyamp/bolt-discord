@@ -22,6 +22,7 @@ from bs4 import BeautifulSoup
 import discord.ext.commands as commands
 
 import testbot.common as cmn
+from bolt.utils import exceptions, embeds, misc
 
 
 class AE7QCog(commands.Cog):
@@ -42,11 +43,11 @@ class AE7QCog(commands.Cog):
             callsign = callsign.upper()
             desc = ""
             base_url = "http://ae7q.com/query/data/CallHistory.php?CALL="
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
 
             async with self.session.get(base_url + callsign) as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 page = await resp.text()
 
             soup = BeautifulSoup(page, features="html.parser")
@@ -68,7 +69,7 @@ class AE7QCog(commands.Cog):
             # catch if the wrong table was selected
             if first_header is None or first_header != "Entity Name":
                 embed.title = f"AE7Q History for {callsign}"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 embed.url = base_url + callsign
                 embed.description = desc
                 embed.description += f"\nNo records found for `{callsign}`"
@@ -77,9 +78,9 @@ class AE7QCog(commands.Cog):
 
             table = await process_table(table[1:])
 
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = f"AE7Q History for {callsign}"
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             embed.url = base_url + callsign
 
             # add the first three rows of the table to the embed
@@ -108,11 +109,11 @@ class AE7QCog(commands.Cog):
             callsign = callsign.upper()
             desc = ""
             base_url = "http://ae7q.com/query/data/CallHistory.php?CALL="
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
 
             async with self.session.get(base_url + callsign) as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 page = await resp.text()
 
             soup = BeautifulSoup(page, features="html.parser")
@@ -122,7 +123,7 @@ class AE7QCog(commands.Cog):
                 table = tables[2] if len(tables[0][0]) == 1 else tables[1]
             except IndexError:
                 embed.title = f"AE7Q Trustee History for {callsign}"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 embed.url = base_url + callsign
                 embed.description = desc
                 embed.description += f"\nNo records found for `{callsign}`"
@@ -135,7 +136,7 @@ class AE7QCog(commands.Cog):
             # catch if the wrong table was selected
             if first_header is None or not first_header.startswith("With"):
                 embed.title = f"AE7Q Trustee History for {callsign}"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 embed.url = base_url + callsign
                 embed.description = desc
                 embed.description += f"\nNo records found for `{callsign}`"
@@ -144,9 +145,9 @@ class AE7QCog(commands.Cog):
 
             table = await process_table(table[2:])
 
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = f"AE7Q Trustee History for {callsign}"
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             embed.url = base_url + callsign
 
             # add the first three rows of the table to the embed
@@ -176,11 +177,11 @@ class AE7QCog(commands.Cog):
             callsign = callsign.upper()
             desc = ""
             base_url = "http://ae7q.com/query/data/CallHistory.php?CALL="
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
 
             async with self.session.get(base_url + callsign) as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 page = await resp.text()
 
             soup = BeautifulSoup(page, features="html.parser")
@@ -204,7 +205,7 @@ class AE7QCog(commands.Cog):
             # catch if the wrong table was selected
             if first_header is None or not first_header.startswith("Receipt"):
                 embed.title = f"AE7Q Application History for {callsign}"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 embed.url = base_url + callsign
                 embed.description = desc
                 embed.description += f"\nNo records found for `{callsign}`"
@@ -213,9 +214,9 @@ class AE7QCog(commands.Cog):
 
             table = await process_table(table[1:])
 
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = f"AE7Q Application History for {callsign}"
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             embed.url = base_url + callsign
 
             # add the first three rows of the table to the embed
@@ -248,11 +249,11 @@ class AE7QCog(commands.Cog):
         """
         with ctx.typing():
             base_url = "http://ae7q.com/query/data/FrnHistory.php?FRN="
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
 
             async with self.session.get(base_url + frn) as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 page = await resp.text()
 
             soup = BeautifulSoup(page, features="html.parser")
@@ -260,7 +261,7 @@ class AE7QCog(commands.Cog):
 
             if not len(tables):
                 embed.title = f"AE7Q History for FRN {frn}"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 embed.url = base_url + frn
                 embed.description = f"No records found for FRN `{frn}`"
                 await ctx.send(embed=embed)
@@ -274,7 +275,7 @@ class AE7QCog(commands.Cog):
             # catch if the wrong table was selected
             if first_header is None or not first_header.startswith("With Licensee"):
                 embed.title = f"AE7Q History for FRN {frn}"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 embed.url = base_url + frn
                 embed.description = f"No records found for FRN `{frn}`"
                 await ctx.send(embed=embed)
@@ -282,9 +283,9 @@ class AE7QCog(commands.Cog):
 
             table = await process_table(table[2:])
 
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = f"AE7Q History for FRN {frn}"
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             embed.url = base_url + frn
 
             # add the first three rows of the table to the embed
@@ -311,11 +312,11 @@ class AE7QCog(commands.Cog):
         with ctx.typing():
             licensee_id = licensee_id.upper()
             base_url = "http://ae7q.com/query/data/LicenseeIdHistory.php?ID="
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
 
             async with self.session.get(base_url + licensee_id) as resp:
                 if resp.status != 200:
-                    raise cmn.BotHTTPError(resp)
+                    raise exceptions.BotHTTPError(resp)
                 page = await resp.text()
 
             soup = BeautifulSoup(page, features="html.parser")
@@ -323,7 +324,7 @@ class AE7QCog(commands.Cog):
 
             if not len(tables):
                 embed.title = f"AE7Q History for Licensee {licensee_id}"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 embed.url = base_url + licensee_id
                 embed.description = f"No records found for Licensee `{licensee_id}`"
                 await ctx.send(embed=embed)
@@ -337,7 +338,7 @@ class AE7QCog(commands.Cog):
             # catch if the wrong table was selected
             if first_header is None or not first_header.startswith("With FCC"):
                 embed.title = f"AE7Q History for Licensee {licensee_id}"
-                embed.colour = cmn.colours.bad
+                embed.colour = misc.colours.bad
                 embed.url = base_url + licensee_id
                 embed.description = f"No records found for Licensee `{licensee_id}`"
                 await ctx.send(embed=embed)
@@ -345,9 +346,9 @@ class AE7QCog(commands.Cog):
 
             table = await process_table(table[2:])
 
-            embed = cmn.embed_factory(ctx)
+            embed = embeds.embed_factory(ctx)
             embed.title = f"AE7Q History for Licensee {licensee_id}"
-            embed.colour = cmn.colours.good
+            embed.colour = misc.colours.good
             embed.url = base_url + licensee_id
 
             # add the first three rows of the table to the embed

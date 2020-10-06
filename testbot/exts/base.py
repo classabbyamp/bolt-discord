@@ -17,6 +17,7 @@ import discord.ext.commands as commands
 
 import testbot.info as info
 import testbot.common as cmn
+from bolt.utils import converters, embeds, checks, misc
 
 import testbot.data.options as opt
 
@@ -51,14 +52,14 @@ class QrmHelpCommand(commands.HelpCommand):
         return f"{opt.display_prefix}{alias} {command.signature}"
 
     async def send_error_message(self, error):
-        embed = cmn.embed_factory(self.context)
+        embed = embeds.embed_factory(self.context)
         embed.title = "qrm Help Error"
         embed.description = error
-        embed.colour = cmn.colours.bad
+        embed.colour = misc.colours.bad
         await self.context.send(embed=embed)
 
     async def send_bot_help(self, mapping):
-        embed = cmn.embed_factory(self.context)
+        embed = embeds.embed_factory(self.context)
         embed.title = "qrm Help"
         embed.description = (f"For command-specific help and usage, use `{opt.display_prefix}help [command name]`."
                              " Many commands have shorter aliases.")
@@ -81,7 +82,7 @@ class QrmHelpCommand(commands.HelpCommand):
             for p in command.parents:
                 if not await p.can_run(self.context):
                     raise commands.CheckFailure
-        embed = cmn.embed_factory(self.context)
+        embed = embeds.embed_factory(self.context)
         embed.title = await self.get_command_signature(command)
         embed.description = command.help
         await self.context.send(embed=embed)
@@ -89,7 +90,7 @@ class QrmHelpCommand(commands.HelpCommand):
     async def send_group_help(self, group):
         if self.verify_checks and not await group.can_run(self.context):
             raise commands.CheckFailure
-        embed = cmn.embed_factory(self.context)
+        embed = embeds.embed_factory(self.context)
         embed.title = await self.get_command_signature(group)
         embed.description = group.help
         for cmd in await self.filter_commands(group.commands, sort=True):
@@ -105,7 +106,7 @@ class BaseCog(commands.Cog):
     @commands.command(name="info", aliases=["about"])
     async def _info(self, ctx: commands.Context):
         """Shows info about qrm."""
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         embed.title = "About qrm"
         embed.description = info.description
 
@@ -120,7 +121,7 @@ class BaseCog(commands.Cog):
     @commands.command(name="ping", aliases=["beep"])
     async def _ping(self, ctx: commands.Context):
         """Shows the current latency to the discord endpoint."""
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         content = ""
         if ctx.invoked_with == "beep":
             embed.title = "**Boop!**"
@@ -133,7 +134,7 @@ class BaseCog(commands.Cog):
     @commands.command(name="changelog", aliases=["clog"])
     async def _changelog(self, ctx: commands.Context, version: str = "latest"):
         """Shows what has changed in a bot version. Defaults to the latest version."""
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         embed.title = "qrm Changelog"
         embed.description = ("For a full listing, visit [Github](https://"
                              "github.com/miaowware/qrm2/blob/master/CHANGELOG.md).")
@@ -154,7 +155,7 @@ class BaseCog(commands.Cog):
             embed.title += ": Version Not Found"
             embed.description += "\n\n**Valid versions:** latest, "
             embed.description += ", ".join(vers)
-            embed.colour = cmn.colours.bad
+            embed.colour = misc.colours.bad
             await ctx.send(embed=embed)
             return
 
@@ -169,16 +170,16 @@ class BaseCog(commands.Cog):
     @commands.command(name="issue")
     async def _issue(self, ctx: commands.Context):
         """Shows how to create a bug report or feature request about the bot."""
-        embed = cmn.embed_factory(ctx)
+        embed = embeds.embed_factory(ctx)
         embed.title = "Found a bug? Have a feature request?"
         embed.description = ("Submit an issue on the [issue tracker]"
                              "(https://github.com/miaowware/qrm2/issues)!")
         await ctx.send(embed=embed)
 
     @commands.command(name="echo", aliases=["e"], category=cmn.cat.admin)
-    @commands.check(cmn.check_if_owner)
+    @commands.check(checks.check_if_owner)
     async def _echo(self, ctx: commands.Context,
-                    channel: Union[cmn.GlobalChannelConverter, commands.UserConverter], *, msg: str):
+                    channel: Union[converters.GlobalChannelConverter, commands.UserConverter], *, msg: str):
         """Sends a message in a channel as qrm. Accepts channel/user IDs/mentions.
         Channel names are current-guild only.
         Does not work with the ID of the bot user."""
