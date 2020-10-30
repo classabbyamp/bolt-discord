@@ -139,10 +139,10 @@ class StudyCog(commands.Cog):
 
         q_msg = await ctx.send(embed=embed)
 
-        await cmn.add_react(q_msg, misc.emojis.a)
-        await cmn.add_react(q_msg, misc.emojis.b)
-        await cmn.add_react(q_msg, misc.emojis.c)
-        await cmn.add_react(q_msg, misc.emojis.d)
+        await misc.add_react(q_msg, misc.emojis.a)
+        await misc.add_react(q_msg, misc.emojis.b)
+        await misc.add_react(q_msg, misc.emojis.c)
+        await misc.add_react(q_msg, misc.emojis.d)
 
         def check(reaction, user):
             return (user.id != self.bot.user.id

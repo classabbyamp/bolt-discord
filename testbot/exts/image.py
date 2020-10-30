@@ -16,7 +16,7 @@ import discord
 import discord.ext.commands as commands
 
 import testbot.common as cmn
-from bolt.utils import image, exceptions, embeds, misc
+from bolt.utils import exceptions, embeds, misc
 
 
 class ImageCog(commands.Cog):
@@ -25,8 +25,8 @@ class ImageCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.bandcharts = image.ImagesGroup(cmn.paths.bandcharts / "meta.json")
-        self.maps = image.ImagesGroup(cmn.paths.maps / "meta.json")
+        self.bandcharts = cmn.ImagesGroup(cmn.paths.bandcharts / "meta.json")
+        self.maps = cmn.ImagesGroup(cmn.paths.maps / "meta.json")
         self.session = aiohttp.ClientSession(connector=bot.qrm.connector)
 
     @commands.command(name="bandplan", aliases=["plan", "bands"], category=cmn.cat.ref)
@@ -44,7 +44,7 @@ class ImageCog(commands.Cog):
                 embed.colour = misc.colours.bad
                 await ctx.send(embed=embed)
                 return
-            metadata: image.ImageMetadata = self.bandcharts[arg]
+            metadata: cmn.ImageMetadata = self.bandcharts[arg]
             img = discord.File(cmn.paths.bandcharts / metadata.filename,
                                filename=metadata.filename)
             if metadata.description:
@@ -71,7 +71,7 @@ class ImageCog(commands.Cog):
                 embed.colour = misc.colours.bad
                 await ctx.send(embed=embed)
                 return
-            metadata: image.ImageMetadata = self.maps[arg]
+            metadata: cmn.ImageMetadata = self.maps[arg]
             img = discord.File(cmn.paths.maps / metadata.filename,
                                filename=metadata.filename)
             if metadata.description:

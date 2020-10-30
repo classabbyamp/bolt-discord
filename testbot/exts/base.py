@@ -17,7 +17,7 @@ import discord.ext.commands as commands
 
 import testbot.info as info
 import testbot.common as cmn
-from bolt.utils import converters, embeds, checks, misc
+from bolt.utils import converters, embeds, misc
 
 import testbot.data.options as opt
 
@@ -177,7 +177,7 @@ class BaseCog(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name="echo", aliases=["e"], category=cmn.cat.admin)
-    @commands.check(checks.check_if_owner)
+    @commands.check(cmn.check_if_owner)
     async def _echo(self, ctx: commands.Context,
                     channel: Union[converters.GlobalChannelConverter, commands.UserConverter], *, msg: str):
         """Sends a message in a channel as qrm. Accepts channel/user IDs/mentions.
