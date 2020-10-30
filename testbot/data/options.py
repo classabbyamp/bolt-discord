@@ -17,13 +17,13 @@ debug = False
 # A tuple of user IDs that should be considered "bot owners".
 # * Those users will have full control over the bot.
 # ! This MUST be a tuple of integers. Single element tuple: `(123,)`
-owners_uids = (200102491231092736,)
+owners_uids = (564766093051166729,)
 
 # The extensions to load when running the bot.
-exts = ['ae7q', 'base', 'fun', 'grid', 'ham', 'image', 'morse', 'qrz', 'study', 'weather', 'dbconv']
+exts = ['ae7q', 'base', 'fun', 'grid', 'ham', 'image', 'morse', 'study', 'weather', 'dbconv']
 
-# Either "time", "random", or "fixed" (first item in statuses)
-status_mode = "time"
+# Either "TIME", "RANDOM", "FIXED" (first item in statuses), "NOMESSAGE" (disabled)
+status_mode = "TIME"
 
 # Random statuses pool
 statuses = ["with lids on the air", "with fire"]
@@ -42,9 +42,9 @@ show_help = True
 
 # Emoji IDs and keywords for emoji reactions
 # Use the format {emoji_id (int): ('tuple', 'of', 'lowercase', 'keywords')}
-msg_reacts = {473524356270522369: ('uwu',),
-              584170691369107456: ('owo', '0w0'),
-              658699411425329192: ('xd',)}
+msg_reacts = {713473175186440694: ('uwu',),
+              658733876176355338: ('pika',),
+              456: ('lol',)}
 
 # A :pika: emote's ID, None for no emote :c
 pika = 658733876176355338
